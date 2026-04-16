@@ -1,0 +1,433 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#FAFAF8;--surface:#FFFFFF;--card:#FFFFFF;
+    --border:#E8E4DC;--border2:#D4CFC4;
+    --coffee:#3D2B1F;--espresso:#6B4226;
+    --cream:#F5F0E8;--foam:#FAF7F2;
+    --green:#1A6B3A;--green-bg:#EAF4EE;
+    --amber:#8B5E0A;--amber-bg:#FDF3E0;
+    --red:#B91C1C;--red-bg:#FEF2F2;
+    --blue:#1E40AF;--blue-bg:#EFF6FF;
+    --text:#1C1917;--muted:#78716C;--hint:#A8A29E;
+    --mono:'DM Mono',monospace;--sans:'Sora',sans-serif;
+  }
+  body{background:var(--bg);font-family:var(--sans);color:var(--text);min-height:600px}
+
+  .topbar{
+    background:var(--coffee);color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 24px;height:56px;
+  }
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-mark{
+    width:32px;height:32px;border-radius:8px;
+    background:linear-gradient(135deg,#C8A46E,#8B5E0A);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+  }
+  .logo-name{font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:0.08em;color:#F5F0E8}
+  .logo-tagline{font-size:10px;color:rgba(245,240,232,0.5);font-family:var(--mono);letter-spacing:0.1em}
+  .topbar-right{display:flex;align-items:center;gap:14px}
+  .live-indicator{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:#86EFAC}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+  .clock{font-family:var(--mono);font-size:12px;color:rgba(245,240,232,0.6)}
+  .btn-refresh{
+    background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+    color:#F5F0E8;padding:6px 14px;border-radius:6px;
+    font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:0.04em;
+    transition:all 0.2s;
+  }
+  .btn-refresh:hover{background:rgba(255,255,255,0.2)}
+
+  .main{padding:24px;max-width:1300px;margin:0 auto}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .kpi{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:18px 20px;position:relative;overflow:hidden;
+  }
+  .kpi-accent{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:12px 0 0 12px}
+  .kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-family:var(--mono);margin-bottom:8px}
+  .kpi-value{font-family:var(--mono);font-size:32px;font-weight:500;line-height:1;margin-bottom:4px}
+  .kpi-sub{font-size:11px;color:var(--hint)}
+
+  .layout-main{display:grid;grid-template-columns:1.7fr 1fr;gap:16px;margin-bottom:16px}
+  .layout-bot{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .panel-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;border-bottom:1px solid var(--border);
+    background:var(--foam);
+  }
+  .panel-title{font-size:12px;font-weight:500;letter-spacing:0.06em;color:var(--coffee);text-transform:uppercase;font-family:var(--mono)}
+  .chip{
+    font-size:10px;font-family:var(--mono);font-weight:500;
+    padding:3px 10px;border-radius:20px;letter-spacing:0.04em;
+  }
+  .chip-ok{background:var(--green-bg);color:var(--green)}
+  .chip-warn{background:var(--amber-bg);color:var(--amber)}
+  .chip-bad{background:var(--red-bg);color:var(--red)}
+  .chip-blue{background:var(--blue-bg);color:var(--blue)}
+  .chip-neutral{background:var(--cream);color:var(--muted)}
+
+  table{width:100%;border-collapse:collapse}
+  thead th{
+    padding:9px 18px;text-align:left;font-size:9px;color:var(--hint);
+    text-transform:uppercase;letter-spacing:0.14em;font-family:var(--mono);
+    border-bottom:1px solid var(--border);background:var(--foam);font-weight:400;
+  }
+  tbody td{padding:12px 18px;font-size:12px;border-bottom:1px solid rgba(232,228,220,0.5);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover td{background:rgba(250,247,242,0.7)}
+  .dev-id{font-family:var(--mono);font-size:11px;color:var(--espresso);font-weight:500}
+
+  .bar-row{display:flex;align-items:center;gap:8px}
+  .bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;min-width:60px}
+  .bar-fill{height:100%;border-radius:3px;transition:width 0.8s ease}
+  .bar-pct{font-family:var(--mono);font-size:11px;min-width:34px;text-align:right;font-weight:500}
+
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:var(--mono);font-weight:500}
+  .pill-ok{background:var(--green-bg);color:var(--green)}
+  .pill-warn{background:var(--amber-bg);color:var(--amber)}
+  .pill-crit{background:var(--red-bg);color:var(--red)}
+  .pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+  .pill-crit .pill-dot{animation:blink 1.2s infinite}
+
+  .right-col{display:flex;flex-direction:column;gap:14px}
+
+  .cb-wrap{padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .cb-ring{
+    width:68px;height:68px;border-radius:50%;
+    border:2.5px solid var(--green);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:10px;font-weight:500;
+    color:var(--green);background:var(--green-bg);letter-spacing:0.04em;
+    transition:all 0.5s;
+  }
+  .cb-ring.open{border-color:var(--red);color:var(--red);background:var(--red-bg);animation:blink 1.2s infinite}
+  .cb-ring.semi{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+  .cb-desc{font-size:10px;color:var(--hint);text-align:center;line-height:1.5;font-family:var(--mono)}
+
+  .throttle-zone{padding:0 18px 16px}
+  .throttle-row{display:flex;justify-content:space-between;font-size:10px;color:var(--hint);margin-bottom:5px;font-family:var(--mono)}
+  .throttle-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px}
+  .throttle-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#22C55E,#86EFAC);transition:width 0.8s ease}
+
+  .stats{padding:2px 0}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:9px 20px;border-bottom:1px solid var(--border)}
+  .stat-row:last-child{border-bottom:none}
+  .stat-label{font-size:12px;color:var(--muted)}
+  .stat-val{font-family:var(--mono);font-size:13px;font-weight:500}
+  .green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}.blue{color:var(--blue)}
+
+  .log-item{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(232,228,220,0.5)}
+  .log-item:last-child{border-bottom:none}
+  .log-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+  .log-ico.ok{background:var(--green-bg)}
+  .log-ico.dlq{background:var(--amber-bg)}
+  .log-ico.pending{background:var(--blue-bg)}
+  .log-body{flex:1}
+  .log-title{font-size:12px;font-weight:500;margin-bottom:2px;color:var(--text)}
+  .log-meta{font-family:var(--mono);font-size:10px;color:var(--hint)}
+  .log-time{font-family:var(--mono);font-size:10px;color:var(--hint);flex-shrink:0}
+
+  .sec-row{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid rgba(232,228,220,0.4)}
+  .sec-row:last-child{border-bottom:none}
+  .sec-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;flex-shrink:0;font-weight:500;letter-spacing:0.06em}
+  .sec-badge.accept{background:var(--green-bg);color:var(--green)}
+  .sec-badge.reject{background:var(--red-bg);color:var(--red)}
+  .sec-badge.warn{background:var(--amber-bg);color:var(--amber)}
+  .sec-text{flex:1;font-size:11px;color:var(--muted)}
+  .sec-time{font-family:var(--mono);font-size:10px;color:var(--hint)}
+
+  .empty{padding:28px 18px;text-align:center;color:var(--hint);font-size:12px;line-height:1.7}
+  .empty code{font-family:var(--mono);font-size:11px;background:var(--cream);padding:2px 6px;border-radius:4px;color:var(--espresso)}
+
+  .footer{
+    margin-top:24px;padding:16px 24px;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:10px;color:var(--hint);
+  }
+  .esc-row{display:flex;gap:6px}
+  .esc-tag{padding:2px 8px;border-radius:4px;background:var(--cream);color:var(--espresso);font-size:10px}
+
+  @media(max-width:860px){
+    .kpi-grid,.layout-main,.layout-bot{grid-template-columns:1fr}
+    .main{padding:14px}
+  }
+</style>
+
+<h2 class="sr-only">CoffeeScale - Panel corporativo de monitoreo de inventario IoT para Andina Roasters</h2>
+
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-mark">☕</div>
+    <div>
+      <div class="logo-name">COFFEESCALE</div>
+      <div class="logo-tagline">Andina Roasters · IoT Inventory</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-indicator"><div class="live-dot"></div>EN VIVO</div>
+    <div class="clock" id="clk">--:--:--</div>
+    <button class="btn-refresh" onclick="refresh()">↻ Actualizar</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#6B4226"></div>
+      <div class="kpi-label">Básculas Activas</div>
+      <div class="kpi-value" id="kpi-total" style="color:#6B4226">—</div>
+      <div class="kpi-sub">dispositivos registrados</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#B91C1C"></div>
+      <div class="kpi-label">Alertas Críticas</div>
+      <div class="kpi-value" id="kpi-alertas" style="color:#B91C1C">—</div>
+      <div class="kpi-sub">bajo umbral configurado</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#1A6B3A"></div>
+      <div class="kpi-label">Órdenes Generadas</div>
+      <div class="kpi-value" id="kpi-ordenes" style="color:#1A6B3A">—</div>
+      <div class="kpi-sub">confirmadas por LogisCore</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-accent" style="background:#1E40AF"></div>
+      <div class="kpi-label">Tokens Rechazados</div>
+      <div class="kpi-value" id="kpi-rechazos" style="color:#1E40AF">—</div>
+      <div class="kpi-sub">spoofing bloqueado (ESC-03)</div>
+    </div>
+  </div>
+
+  <div class="layout-main">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Inventario en Tiempo Real</span>
+        <span class="chip chip-neutral" id="badge-alertas">cargando...</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Device</th><th>Tienda</th><th>Inventario</th>
+            <th>Batería</th><th>Actualizado</th><th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="right-col">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Circuit Breaker ERP</span>
+          <span class="chip chip-ok" id="cb-chip">CERRADO</span>
+        </div>
+        <div class="cb-wrap">
+          <div class="cb-ring" id="cb-ring">CERRADO</div>
+          <div class="cb-desc">LogisCore · máx 1 req/s<br>ESC-04 Confiabilidad</div>
+        </div>
+        <div class="throttle-zone">
+          <div class="throttle-row">
+            <span>Cola de alertas</span>
+            <span id="cola-n">0 pendientes</span>
+          </div>
+          <div class="throttle-track">
+            <div class="throttle-fill" id="throttle" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Sistema</span></div>
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">Costo cloud/mes</span><span class="stat-val green">$0.00</span></div>
+          <div class="stat-row"><span class="stat-label">Latencia panel</span><span class="stat-val blue" id="latencia">—</span></div>
+          <div class="stat-row"><span class="stat-label">Backend</span><span class="stat-val" id="backend" style="color:var(--espresso)">—</span></div>
+          <div class="stat-row"><span class="stat-label">Órdenes en DLQ</span><span class="stat-val amber" id="dlq">0</span></div>
+          <div class="stat-row"><span class="stat-label">Umbral alerta</span><span class="stat-val" id="umbral-stat" style="color:var(--muted)">20%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout-bot">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Órdenes de Reposición</span>
+        <span class="chip chip-ok" id="badge-ord">0 confirmadas</span>
+      </div>
+      <div id="log-ord">
+        <div class="empty">Sin órdenes aún.<br>Ejecuta <code>npm run simulate</code> para generar telemetría.</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Log de Seguridad HMAC</span>
+        <span class="chip chip-blue" id="badge-sec">ESC-03</span>
+      </div>
+      <div id="log-sec">
+        <div class="empty">Sin eventos de seguridad aún.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <span>CoffeeScale MVP · Ingeniería de Software 2 · Grupo 3 · El Bosque 2025</span>
+  <div class="esc-row">
+    <span class="esc-tag">ESC-01</span><span class="esc-tag">ESC-02</span>
+    <span class="esc-tag">ESC-03</span><span class="esc-tag">ESC-04</span><span class="esc-tag">ESC-05</span>
+  </div>
+  <span id="last-upd">—</span>
+</footer>
+
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+
+function tick() {
+  document.getElementById('clk').textContent = new Date().toLocaleTimeString('es-CO');
+}
+setInterval(tick, 1000); tick();
+
+function ago(iso) {
+  const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+  return s < 60 ? s + 's' : s < 3600 ? Math.floor(s/60) + 'm' : Math.floor(s/3600) + 'h';
+}
+
+function barColor(p) {
+  return p <= 20 ? '#EF4444' : p <= 40 ? '#F59E0B' : '#22C55E';
+}
+
+function pillHtml(p) {
+  if (p <= 20) return `<span class="pill pill-crit"><span class="pill-dot"></span>ALERTA</span>`;
+  if (p <= 40) return `<span class="pill pill-warn"><span class="pill-dot"></span>BAJO</span>`;
+  return `<span class="pill pill-ok"><span class="pill-dot"></span>NORMAL</span>`;
+}
+
+async function loadBasculas() {
+  const t0 = Date.now();
+  try {
+    const r = await fetch(API + '/status');
+    const d = await r.json();
+    const lat = Date.now() - t0;
+    document.getElementById('latencia').textContent = lat + 'ms';
+    document.getElementById('kpi-total').textContent = d.total ?? 0;
+    document.getElementById('kpi-alertas').textContent = d.alertas ?? 0;
+    document.getElementById('umbral-stat').textContent = (d.umbralPct ?? 20) + '%';
+    const al = d.alertas ?? 0;
+    const b = document.getElementById('badge-alertas');
+    b.textContent = al + (al === 1 ? ' alerta' : ' alertas');
+    b.className = 'chip ' + (al > 0 ? 'chip-bad' : 'chip-ok');
+
+    const list = d.basculas || [];
+    if (!list.length) {
+      document.getElementById('tbody').innerHTML = `<tr><td colspan="6" class="empty">Sin datos. Ejecuta <code>npm run simulate</code></td></tr>`;
+      return;
+    }
+    document.getElementById('tbody').innerHTML = list.map(b => {
+      const p = b.porcentaje ?? 0;
+      const c = barColor(p);
+      const bat = b.bateria ?? 100;
+      const batC = bat > 50 ? '#22C55E' : bat > 20 ? '#F59E0B' : '#EF4444';
+      const t = b.ultimaActualizacion ? ago(b.ultimaActualizacion) : '—';
+      return `<tr>
+        <td><span class="dev-id">${b.deviceId}</span></td>
+        <td style="font-size:11px;color:var(--muted)">${b.tiendaId||'—'}</td>
+        <td><div class="bar-row"><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${c}"></div></div><span class="bar-pct" style="color:${c}">${p}%</span></div></td>
+        <td><div class="bar-row"><div class="bar-track" style="min-width:32px"><div class="bar-fill" style="width:${bat}%;background:${batC}"></div></div><span style="font-family:var(--mono);font-size:10px;color:var(--hint)">${bat}%</span></div></td>
+        <td style="font-family:var(--mono);font-size:10px;color:var(--hint)">${t}</td>
+        <td>${pillHtml(p)}</td>
+      </tr>`;
+    }).join('');
+  } catch {
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="6" class="empty" style="color:#B91C1C">Servidor no disponible. Inicia con <code>npm start</code></td></tr>`;
+  }
+}
+
+async function loadOrdenes() {
+  try {
+    const r = await fetch(API + '/ordenes');
+    const d = await r.json();
+    document.getElementById('kpi-ordenes').textContent = d.total ?? 0;
+    document.getElementById('dlq').textContent = d.enDLQ ?? 0;
+    const conf = d.confirmadas ?? 0;
+    const bo = document.getElementById('badge-ord');
+    bo.textContent = conf + ' confirmada' + (conf !== 1 ? 's' : '');
+    bo.className = 'chip ' + (conf > 0 ? 'chip-ok' : 'chip-neutral');
+
+    const items = [...(d.ordenes || [])].reverse().slice(0, 7);
+    if (!items.length) { document.getElementById('log-ord').innerHTML = '<div class="empty">Sin órdenes aún.</div>'; return; }
+    document.getElementById('log-ord').innerHTML = items.map(o => {
+      const ok = o.estado === 'CONFIRMADA', dlq = o.estado === 'EN_DLQ';
+      const ico = ok ? '✓' : dlq ? '!' : '…';
+      const cls = ok ? 'ok' : dlq ? 'dlq' : 'pending';
+      const clr = ok ? 'var(--green)' : dlq ? 'var(--red)' : 'var(--blue)';
+      return `<div class="log-item">
+        <div class="log-ico ${cls}">${ico}</div>
+        <div class="log-body">
+          <div class="log-title">Orden ${(o.ordenId||'').slice(0,8)}… · ${o.tiendaId||'—'}</div>
+          <div class="log-meta">${o.deviceId||'—'} · ${o.pesoActual||0}g · <span style="color:${clr}">${o.estado}</span></div>
+        </div>
+        <div class="log-time">${o.fechaCreacion ? ago(o.fechaCreacion) : '—'}</div>
+      </div>`;
+    }).join('');
+  } catch {}
+}
+
+async function loadLogs() {
+  try {
+    const r = await fetch(API + '/logs');
+    const d = await r.json();
+    document.getElementById('kpi-rechazos').textContent = d.rechazos ?? 0;
+    const bs = document.getElementById('badge-sec');
+    const rc = d.rechazos ?? 0;
+    bs.textContent = rc + ' rechazos'; bs.className = 'chip ' + (rc > 0 ? 'chip-bad' : 'chip-ok');
+
+    const logs = [...(d.logs || [])].reverse().slice(0, 7);
+    if (!logs.length) { document.getElementById('log-sec').innerHTML = '<div class="empty">Sin eventos aún.</div>'; return; }
+    document.getElementById('log-sec').innerHTML = logs.map(l => {
+      const ok = l.tipoEvento === 'MENSAJE_ACEPTADO', bad = l.tipoEvento === 'TOKEN_INVALIDO';
+      const cls = ok ? 'accept' : bad ? 'reject' : 'warn';
+      const lbl = bad ? 'RECHAZADO' : ok ? 'ACEPTADO' : 'INVÁLIDO';
+      return `<div class="sec-row">
+        <span class="sec-badge ${cls}">${lbl}</span>
+        <span class="sec-text">${l.deviceId||'?'} · ${l.ip||'?'} · ${l.motivo||''}</span>
+        <span class="sec-time">${l.timestamp ? ago(l.timestamp) : '—'}</span>
+      </div>`;
+    }).join('');
+  } catch {}
+}
+
+async function loadHealth() {
+  try {
+    const r = await fetch(API + '/health');
+    const d = await r.json();
+    const cb = d.circuitBreaker || 'CERRADO';
+    const cola = d.colaAlertas || 0;
+    const ring = document.getElementById('cb-ring');
+    const chip = document.getElementById('cb-chip');
+    ring.textContent = cb; chip.textContent = cb;
+    ring.className = 'cb-ring' + (cb==='ABIERTO'?' open': cb==='SEMIABIERTO'?' semi':'');
+    chip.className = 'chip ' + (cb==='CERRADO'?'chip-ok':cb==='ABIERTO'?'chip-bad':'chip-warn');
+    document.getElementById('throttle').style.width = Math.min(100,(cola/20)*100) + '%';
+    document.getElementById('cola-n').textContent = cola + ' pendientes';
+    document.getElementById('backend').textContent = d.mockapi === 'configurado' ? 'MockAPI.io' : 'JSON local';
+  } catch {}
+}
+
+async function refresh() {
+  await Promise.all([loadBasculas(), loadOrdenes(), loadLogs(), loadHealth()]);
+  document.getElementById('last-upd').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CO');
+}
+
+refresh();
+setInterval(refresh, 5000);
+</script>
