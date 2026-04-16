@@ -1,0 +1,6 @@
+.env
+node_modules/
+data/basculas.json
+data/ordenes.json
+data/auditoria.json
+.DS_Store
