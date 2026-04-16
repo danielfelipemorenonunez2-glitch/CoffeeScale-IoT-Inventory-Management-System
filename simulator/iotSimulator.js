@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const fetch  = require('node-fetch');
 
 const SECRET  = process.env.SECRET_KEY || 'coffeescale-secret-2025';
-const API_URL = `http://localhost:${process.env.PORT || 3000}/api/telemetry`;
+const API_URL = `https://web-production-0cd54e.up.railway.app/api/telemetry`;
 
 const BASCULAS = [
   { deviceId: 'BSC-001', tiendaId: 'TIENDA-01', peso: 48000 },
