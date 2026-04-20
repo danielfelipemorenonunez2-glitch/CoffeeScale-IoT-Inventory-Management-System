@@ -10,7 +10,7 @@ function ensure() {
 }
 function read()      { ensure(); try { return JSON.parse(fs.readFileSync(LOCAL,'utf-8')); } catch { return []; } }
 function write(data) { ensure(); fs.writeFileSync(LOCAL, JSON.stringify(data, null, 2)); }
-function useMock()   { return process.env.MOCKAPI_BASE_URL && !process.env.MOCKAPI_BASE_URL.includes('TU_ID'); }
+function useMock()   { return false; } // ← CAMBIO: logs siempre locales (free tier MockAPI = 2 recursos)
 
 const EMOJI = { TOKEN_INVALIDO:'🔴', ESQUEMA_INVALIDO:'🟡', MENSAJE_ACEPTADO:'🟢' };
 
@@ -23,12 +23,10 @@ const LogAuditoria = {
     }
     const logs = read(); logs.push(entrada); write(logs);
   },
-
   async getAll() {
     if (useMock()) { try { return await require('../config/mockapi').getLogs(); } catch {} }
     return read();
   },
-
   async contarRechazos() {
     return (await this.getAll()).filter(l => l.tipoEvento === 'TOKEN_INVALIDO').length;
   }
